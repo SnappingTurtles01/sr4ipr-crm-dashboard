@@ -24,6 +24,7 @@ app.use('/api/invoices', require('./routes/invoices'));
 app.use('/api/renewals', require('./routes/renewals'));
 app.use('/api/users',    require('./routes/users'));
 app.use('/api/tasks',    require('./routes/tasks'));
+app.use('/api',          require('./routes/data'));
 
 // ── HEALTH CHECK ───────────────────────────────────────────
 app.get('/api/health', (req, res) => {

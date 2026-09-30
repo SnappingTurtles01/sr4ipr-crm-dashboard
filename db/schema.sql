@@ -169,6 +169,7 @@ CREATE TABLE IF NOT EXISTS invoices (
   description      TEXT,
   amount           INTEGER DEFAULT 0,  -- professional fee
   govt_fee         INTEGER DEFAULT 0,
+  out_of_pocket    INTEGER DEFAULT 0,
   total            INTEGER DEFAULT 0,
   amount_received  INTEGER DEFAULT 0,
   balance_due      INTEGER DEFAULT 0,
@@ -181,6 +182,8 @@ CREATE TABLE IF NOT EXISTS invoices (
   created_at       TIMESTAMP DEFAULT NOW(),
   updated_at       TIMESTAMP DEFAULT NOW()
 );
+
+ALTER TABLE invoices ADD COLUMN IF NOT EXISTS out_of_pocket INTEGER DEFAULT 0;
 
 CREATE INDEX IF NOT EXISTS idx_invoices_client_id ON invoices(client_id);
 CREATE INDEX IF NOT EXISTS idx_invoices_matter_id ON invoices(matter_id);

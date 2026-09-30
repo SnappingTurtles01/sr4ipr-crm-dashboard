@@ -35,4 +35,39 @@ router.post('/', auth, async (req, res) => {
   res.status(201).json(result.rows[0]);
 });
 
+router.post('/merge', auth, async (req, res) => {
+  const { keepId, deleteId, keepName } = req.body || {};
+  if (!keepId || !deleteId || keepId === deleteId)
+    return res.status(400).json({ error: 'Two different client IDs are required' });
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const selected = await client.query(
+      'SELECT id,name FROM clients WHERE id=ANY($1) ORDER BY id FOR UPDATE',
+      [[keepId, deleteId]],
+    );
+    const keeper = selected.rows.find((row) => row.id === keepId);
+    const duplicate = selected.rows.find((row) => row.id === deleteId);
+    if (!keeper || !duplicate) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'One or both clients no longer exist' });
+    }
+
+    const name = (keepName || keeper.name).trim();
+    await client.query('UPDATE clients SET name=$1 WHERE id=$2', [name, keepId]);
+    await client.query('UPDATE matters SET client_id=$1,client_name=$2 WHERE client_id=$3', [keepId, name, deleteId]);
+    await client.query('UPDATE invoices SET client_id=$1 WHERE client_id=$2', [keepId, deleteId]);
+    await client.query('UPDATE renewals SET client_name=$1 WHERE client_name=$2', [name, duplicate.name]);
+    await client.query('DELETE FROM clients WHERE id=$1', [deleteId]);
+    await client.query('COMMIT');
+    res.json({ ok: true, keepId, deleteId, name });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    res.status(500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
 module.exports = router;
