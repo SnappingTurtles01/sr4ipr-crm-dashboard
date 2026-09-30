@@ -1,9 +1,8 @@
 // routes/renewals.js
 const express = require('express');
 const router  = express.Router();
-const { Pool } = require('pg');
 const auth    = require('../middleware/auth');
-const pool    = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool    = require('../db/pool');
 
 router.get('/', auth, async (req, res) => {
   const { type, urgency } = req.query;

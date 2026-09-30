@@ -1,10 +1,9 @@
 // routes/users.js
 const express = require('express');
 const router  = express.Router();
-const { Pool } = require('pg');
 const bcrypt  = require('bcryptjs');
 const auth    = require('../middleware/auth');
-const pool    = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool    = require('../db/pool');
 
 function adminOnly(req, res, next) {
   if (!['coo','founder'].includes(req.user.role))

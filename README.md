@@ -44,7 +44,7 @@ sr4ipr-deploy/
 
 ### Prerequisites
 - Node.js v20 LTS — https://nodejs.org
-- PostgreSQL 16 — https://postgresql.org/download
+- A PostgreSQL database, such as Neon
 
 ### Step 1 — Install dependencies
 ```bash
@@ -52,38 +52,28 @@ cd sr4ipr-deploy
 npm install
 ```
 
-### Step 2 — Create the database
-Open pgAdmin or psql terminal:
-```sql
-CREATE DATABASE sr4ipr_crm;
-```
-
-### Step 3 — Run the schema
-```bash
-psql -U postgres -d sr4ipr_crm -f db/schema.sql
-```
-This creates all tables: users, clients, matters, tasks, communications,
-documents, invoices, renewals.
-
-### Step 4 — Configure environment
+### Step 2 — Configure environment
 ```bash
 cp .env.example .env
 ```
-Edit .env and fill in:
+Set `DATABASE_URL` to the connection string from Neon. Keep its `sslmode=require` option. Generate `JWT_SECRET` with:
 ```
-DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/sr4ipr_crm
-JWT_SECRET=any-random-string-minimum-32-characters-long
-PORT=3000
+node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 ```
 
-### Step 5 — Seed all data
+### Step 3 — Create the tables
 ```bash
-node db/seed.js
+npm run schema
 ```
-This loads 842 clients, 2,081 matters, 748 invoices, 12 users, 294 renewals.
-Takes approximately 2-3 minutes. You will see progress in the terminal.
+This creates the tables and indexes in the configured database.
 
-### Step 6 — Start the server
+### Step 4 — Seed all data
+```bash
+npm run seed
+```
+This loads the included clients, matters, tasks, invoices, users, renewals, communications, and documents. Seeding is safe to rerun for existing IDs.
+
+### Step 5 — Start the server
 ```bash
 node server.js
 ```
@@ -126,8 +116,8 @@ NODE_ENV=production
 In Railway → your app service → click Deploy Logs
 After first deploy, open the Railway shell:
 ```bash
-node db/schema.sql   # or run via psql with Railway DATABASE_URL
-node db/seed.js
+npm run schema
+npm run seed
 ```
 
 ### Step 6 — Connect custom domain

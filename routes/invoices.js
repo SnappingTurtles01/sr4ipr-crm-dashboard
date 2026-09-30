@@ -1,9 +1,8 @@
 // routes/invoices.js
 const express = require('express');
 const router  = express.Router();
-const { Pool } = require('pg');
 const auth    = require('../middleware/auth');
-const pool    = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool    = require('../db/pool');
 
 // Only accounts, coo, biz_head, founder can access billing
 function billingAuth(req, res, next) {

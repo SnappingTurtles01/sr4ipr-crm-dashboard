@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS clients (
   id          VARCHAR(20) PRIMARY KEY,
   name        VARCHAR(200) NOT NULL,
-  email       VARCHAR(150),
+  email       TEXT,
   phone       VARCHAR(20),
   type        VARCHAR(30) DEFAULT 'individual',
   city        VARCHAR(100),
@@ -27,6 +27,8 @@ CREATE TABLE IF NOT EXISTS clients (
   created_at  DATE DEFAULT CURRENT_DATE,
   updated_at  TIMESTAMP DEFAULT NOW()
 );
+
+ALTER TABLE clients ALTER COLUMN email TYPE TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_clients_name ON clients(name);
 CREATE INDEX IF NOT EXISTS idx_clients_email ON clients(email);
@@ -89,7 +91,7 @@ CREATE TABLE IF NOT EXISTS matters (
   notice_type           VARCHAR(50),
   opposite_party        VARCHAR(200),
   opposite_party_address TEXT,
-  opposite_party_email  VARCHAR(150),
+  opposite_party_email  TEXT,
   dispatch_date         DATE,
   speed_post_id         VARCHAR(50),
   delivery_date         DATE,

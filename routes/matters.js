@@ -2,10 +2,8 @@
 
 const express = require('express');
 const router  = express.Router();
-const { Pool } = require('pg');
 const auth    = require('../middleware/auth');
-
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = require('../db/pool');
 
 // Role → allowed divisions map
 const ROLE_DIVISIONS = {

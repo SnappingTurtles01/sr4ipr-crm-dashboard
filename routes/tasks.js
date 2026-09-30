@@ -2,9 +2,8 @@
 
 const express = require('express');
 const router  = express.Router();
-const { Pool } = require('pg');
 const auth    = require('../middleware/auth');
-const pool    = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool    = require('../db/pool');
 
 // GET /api/tasks/mine — all pending tasks assigned to current user
 router.get('/mine', auth, async (req, res) => {
